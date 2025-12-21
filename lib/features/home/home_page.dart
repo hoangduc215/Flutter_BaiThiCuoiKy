@@ -5,25 +5,31 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  final void Function(String brand) onBrandSelected;
-  const HomePage({super.key, required this.onBrandSelected});
+  final void Function(String? brand, String? keyword) onBranOrKeywordSelected;
+  const HomePage({super.key, required this.onBranOrKeywordSelected});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => HomeController()..loadProducts(),
-      child: _HomeView(onBrandSelected: onBrandSelected),
+      child: _HomeView(onBranOrKeywordSelected: onBranOrKeywordSelected),
     );
   }
 }
 
-class _HomeView extends StatelessWidget {
-  final void Function(String brand) onBrandSelected;
-  const _HomeView({required this.onBrandSelected});
+class _HomeView extends StatefulWidget {
+  final void Function(String? brand, String? keyword) onBranOrKeywordSelected;
+  const _HomeView({required this.onBranOrKeywordSelected});
+
+  @override
+  State<_HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<_HomeView> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // Danh sách hãng:
     final brands = [
       {"name": "Apple", "image": "assets/icon/apple.png"},
       {"name": "Oppo", "image": "assets/icon/oppo.png"},
@@ -41,7 +47,7 @@ class _HomeView extends StatelessWidget {
     }
 
     return Scaffold(
-      //APP BAR Ở ĐÂY:
+      extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: ClipRRect(
@@ -54,41 +60,61 @@ class _HomeView extends StatelessWidget {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                 child: Row(
                   children: [
-                    const SizedBox(width: 8),
-                    Icon(Iconsax.shop5, color: Colors.white, size: 28),
+                    const SizedBox(width: 15),
+                    const Icon(Iconsax.shop5, color: Colors.white, size: 32),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Container(
                         height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.search, color: Colors.grey),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: TextFormField(
-                                decoration: const InputDecoration(
-                                  hintText: "Tìm sản phẩm, cửa hàng...",
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 14,
-                                  ),
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                ),
-                              ),
+                        child: TextFormField(
+                          controller: _controller,
+                          onFieldSubmitted: (value) {
+                            if (value.trim().isNotEmpty) {
+                              widget.onBranOrKeywordSelected(
+                                null,
+                                value.trim(),
+                              );
+                            }
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                              size: 27,
                             ),
-                          ],
+                            hintText: "Tìm điện thoại, phụ kiện...",
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                            suffixIcon: _controller.text.isEmpty
+                                ? null
+                                : IconButton(
+                                    icon: const Icon(
+                                      Icons.close,
+                                      size: 27,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      _controller.clear();
+                                      setState(() {});
+                                    },
+                                  ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                            ),
+                          ),
+                          onChanged: (_) => setState(() {}),
                         ),
                       ),
                     ),
@@ -96,7 +122,7 @@ class _HomeView extends StatelessWidget {
                       icon: const Icon(
                         Iconsax.notification5,
                         color: Colors.white,
-                        size: 28,
+                        size: 32,
                       ),
                       onPressed: () {},
                     ),
@@ -113,7 +139,9 @@ class _HomeView extends StatelessWidget {
         onRefresh: () => context.read<HomeController>().loadProducts(),
         child: CustomScrollView(
           slivers: [
-            // ẢNH GIỚI THIỆU:
+            const SliverToBoxAdapter(child: SizedBox(height: 95)),
+
+            // Banner
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -130,7 +158,7 @@ class _HomeView extends StatelessWidget {
               ),
             ),
 
-            // DANH SÁCH CÁC HÃNG:
+            // Brands
             SliverToBoxAdapter(
               child: Center(
                 child: SizedBox(
@@ -144,7 +172,10 @@ class _HomeView extends StatelessWidget {
                         double logoSize = 60;
                         return GestureDetector(
                           onTap: () {
-                            onBrandSelected(brand['name'] as String);
+                            widget.onBranOrKeywordSelected(
+                              brand['name'] as String,
+                              null,
+                            );
                           },
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -157,7 +188,7 @@ class _HomeView extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(
                                     logoSize / 2,
                                   ),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
                                       color: Colors.black26,
                                       blurRadius: 4,
@@ -195,56 +226,39 @@ class _HomeView extends StatelessWidget {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // DANH SÁCH ĐIỆN THOẠI NỔI BẬT:
+            // Featured Phones
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TITLE:
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
                       ),
                       child: Row(
                         children: [
-                          const Text(
+                          Text(
                             "DANH SÁCH ĐIỆN THOẠI NỔI BẬT",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(8),
-                            child: Row(
-                              children: const [
-                                Text(
-                                  "Xem tất cả",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(
-                                  Icons.chevron_right,
-                                  size: 20,
-                                  color: Colors.red,
-                                ),
-                              ],
+                          Spacer(),
+                          Text(
+                            "Xem tất cả",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     ),
-
-                    // DANH SÁCH ĐIỆN THOẠI NỔI BẬT
                     _HorizontalProductGrid(products: state.phones),
                   ],
                 ),
@@ -252,56 +266,39 @@ class _HomeView extends StatelessWidget {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // DANH SÁCH PHỤ KIỆN NỔI BẬT:
+            // Featured Accessories
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TITLE:
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
                       ),
                       child: Row(
                         children: [
-                          const Text(
+                          Text(
                             "DANH SÁCH PHỤ KIỆN NỔI BẬT",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(8),
-                            child: Row(
-                              children: const [
-                                Text(
-                                  "Xem tất cả",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(
-                                  Icons.chevron_right,
-                                  size: 20,
-                                  color: Colors.red,
-                                ),
-                              ],
+                          Spacer(),
+                          Text(
+                            "Xem tất cả",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     ),
-
-                    // DANH SÁCH ĐIỆN THOẠI NỔI BẬT
                     _HorizontalProductGrid(products: state.accessories),
                   ],
                 ),
@@ -315,7 +312,7 @@ class _HomeView extends StatelessWidget {
   }
 }
 
-//CẤU TRÚC 1 CARD SẢN PHẨM:
+// -------------------------- Product Item --------------------------
 class _ProductGridItem extends StatelessWidget {
   final product;
   const _ProductGridItem({required this.product});
@@ -344,10 +341,8 @@ class _ProductGridItem extends StatelessWidget {
           ],
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ẢNH Ở ĐÂY:
             Stack(
               children: [
                 AspectRatio(
@@ -368,15 +363,11 @@ class _ProductGridItem extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // TIM Ở ĐÂY:
                 const Positioned(
                   top: 6,
                   right: 6,
                   child: Icon(Icons.favorite_border, color: Colors.red),
                 ),
-
-                // GIẢM GIÁ Ở ĐÂY
                 if (product.discountPercentage > 0)
                   Positioned(
                     top: 6,
@@ -402,14 +393,11 @@ class _ProductGridItem extends StatelessWidget {
                   ),
               ],
             ),
-
-            // THÔNG TIN Ở ĐÂY:
             Padding(
               padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TÊN:
                   Text(
                     product.title,
                     maxLines: 1,
@@ -420,8 +408,6 @@ class _ProductGridItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-
-                  // GIỚI THIỆU:
                   Text(
                     product.description,
                     maxLines: 1,
@@ -429,8 +415,6 @@ class _ProductGridItem extends StatelessWidget {
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
-
-                  // GIÁ + RATING:
                   Row(
                     children: [
                       Text(
@@ -463,10 +447,9 @@ class _ProductGridItem extends StatelessWidget {
   }
 }
 
-//CẤU TRÚC 1 GRID VIEW 2 HÀNG KÉO NGANG:
+// -------------------------- Horizontal Product Grid --------------------------
 class _HorizontalProductGrid extends StatelessWidget {
   final List products;
-
   const _HorizontalProductGrid({required this.products});
 
   @override

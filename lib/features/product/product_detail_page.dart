@@ -97,7 +97,6 @@ class ProductDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
             _buildImageSlider(product),
             _buildBasicInfo(product),
             _buildPriceInfo(product),

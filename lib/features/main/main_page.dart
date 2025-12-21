@@ -32,13 +32,16 @@ class _MainPageState extends State<MainPage> {
         children: [
           _buildTabNavigator(
             HomePage(
-              onBrandSelected: (brand) {
-                setTabIndex(1, initialBrand: brand);
+              onBranOrKeywordSelected: (String? brand, String? keyword) {
+                setTabIndex(1, initialBrand: brand, initialKeyword: keyword);
               },
             ),
             0,
           ),
-          _buildTabNavigator(SearchPage(initialBrand: null), 1),
+          _buildTabNavigator(
+            SearchPage(initialBrand: null, initialKeyword: null),
+            1,
+          ),
           _buildTabNavigator(const StorePage(), 2),
           _buildTabNavigator(const CartPage(), 3),
           _buildTabNavigator(const ProfilePage(), 4),
@@ -149,15 +152,18 @@ class _MainPageState extends State<MainPage> {
   }
 
   //HÀM CHUYỂN TAB SEARCH:
-  void setTabIndex(int index, {String? initialBrand}) {
+  void setTabIndex(int index, {String? initialBrand, String? initialKeyword}) {
     if (_currentIndex != index) {
       setState(() => _currentIndex = index);
     }
-    // Nếu chuyển sang tab Search và có brand:
-    if (index == 1 && initialBrand != null) {
+
+    if (index == 1) {
       _navigatorKeys[1].currentState?.push(
         MaterialPageRoute(
-          builder: (_) => SearchPage(initialBrand: initialBrand),
+          builder: (_) => SearchPage(
+            initialBrand: initialBrand,
+            initialKeyword: initialKeyword,
+          ),
         ),
       );
     }
