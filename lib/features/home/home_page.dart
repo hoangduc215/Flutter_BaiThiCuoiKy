@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_baithicuoiky/features/home/home_controller.dart';
 import 'package:flutter_baithicuoiky/features/product/product_detail_page.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -47,7 +48,10 @@ class _HomeViewState extends State<_HomeView> {
     }
 
     return Scaffold(
+      //LÀM CHO APP BAR ĐÈ LÊN BODY:
       extendBodyBehindAppBar: true,
+
+      //APP BAR Ở ĐÂY:
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: ClipRRect(
@@ -64,8 +68,12 @@ class _HomeViewState extends State<_HomeView> {
                 child: Row(
                   children: [
                     const SizedBox(width: 15),
+
+                    // ICON SHOP:
                     const Icon(Iconsax.shop5, color: Colors.white, size: 32),
                     const SizedBox(width: 12),
+
+                    // THANH TÌM KIẾM:
                     Expanded(
                       child: Container(
                         height: 40,
@@ -118,14 +126,19 @@ class _HomeViewState extends State<_HomeView> {
                         ),
                       ),
                     ),
+
+                    //ICON THÔNG BÁO:
                     IconButton(
                       icon: const Icon(
                         Iconsax.notification5,
                         color: Colors.white,
                         size: 32,
                       ),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       onPressed: () {},
                     ),
+
                     const SizedBox(width: 8),
                   ],
                 ),
@@ -135,13 +148,15 @@ class _HomeViewState extends State<_HomeView> {
         ),
       ),
 
+      //BODY Ở ĐÂY:
       body: RefreshIndicator(
         onRefresh: () => context.read<HomeController>().loadProducts(),
         child: CustomScrollView(
           slivers: [
+            //CHỪA CHỖ CHO APP BAR:
             const SliverToBoxAdapter(child: SizedBox(height: 95)),
 
-            // Banner
+            // BANNER Ở ĐÂY:
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -158,7 +173,7 @@ class _HomeViewState extends State<_HomeView> {
               ),
             ),
 
-            // Brands
+            // DANH SÁCH BRAND:
             SliverToBoxAdapter(
               child: Center(
                 child: SizedBox(
@@ -226,7 +241,7 @@ class _HomeViewState extends State<_HomeView> {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // Featured Phones
+            // DANH SÁCH ĐIỆN THOẠI NỔI BẬT:
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -266,7 +281,7 @@ class _HomeViewState extends State<_HomeView> {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // Featured Accessories
+            // DANH SÁCH PHỤ KIỆN NỔI BẬT
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -312,7 +327,7 @@ class _HomeViewState extends State<_HomeView> {
   }
 }
 
-// -------------------------- Product Item --------------------------
+// HÀM HIỂN THỊ TỪNG ITEM:
 class _ProductGridItem extends StatelessWidget {
   final product;
   const _ProductGridItem({required this.product});
@@ -323,8 +338,24 @@ class _ProductGridItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ProductDetailPage(product: product),
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => ProductDetailPage(product: product),
+            transitionDuration: const Duration(milliseconds: 300),
+            reverseTransitionDuration: const Duration(milliseconds: 300),
+            transitionsBuilder: (_, animation, secondaryAnimation, child) {
+              final scaleAnimation = Tween<double>(begin: 0.9, end: 1.0)
+                  .animate(
+                    CurvedAnimation(parent: animation, curve: Curves.linear),
+                  );
+              final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.linear),
+              );
+
+              return FadeTransition(
+                opacity: fadeAnimation,
+                child: ScaleTransition(scale: scaleAnimation, child: child),
+              );
+            },
           ),
         );
       },
@@ -418,7 +449,7 @@ class _ProductGridItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "\$${product.price}",
+                        formatPrice(product.price),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -447,7 +478,7 @@ class _ProductGridItem extends StatelessWidget {
   }
 }
 
-// -------------------------- Horizontal Product Grid --------------------------
+// GRID VIEW KÉO NGANG 2 HÀNG:
 class _HorizontalProductGrid extends StatelessWidget {
   final List products;
   const _HorizontalProductGrid({required this.products});
@@ -474,4 +505,10 @@ class _HorizontalProductGrid extends StatelessWidget {
       ),
     );
   }
+}
+
+// HÀM ĐỔI GIÁ ĐÔ SANG GIÁ VIỆT:
+String formatPrice(double usdPrice, {double exchangeRate = 25000}) {
+  double vndPrice = usdPrice * exchangeRate;
+  return "${NumberFormat("#,##0", "vi_VN").format(vndPrice)}đ";
 }

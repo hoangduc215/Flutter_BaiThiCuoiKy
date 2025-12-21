@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final product;
@@ -8,6 +9,7 @@ class ProductDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       //APP BAR Ở ĐÂY:
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -97,9 +99,11 @@ class ProductDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 100),
             _buildImageSlider(product),
             _buildBasicInfo(product),
             _buildPriceInfo(product),
+            buildActionButtons(context, product),
             _buildMetaInfo(product),
             _buildDescription(product),
             _buildSpecifications(product),
@@ -112,9 +116,10 @@ class ProductDetailPage extends StatelessWidget {
   }
 }
 
+// HÌNH ẢNH:
 Widget _buildImageSlider(product) {
   return SizedBox(
-    height: 500,
+    height: 400,
     child: PageView.builder(
       itemCount: product.images.length,
       itemBuilder: (context, index) {
@@ -124,6 +129,7 @@ Widget _buildImageSlider(product) {
   );
 }
 
+// TÊN + SAO + TRONG KHO + HÃNG:
 Widget _buildBasicInfo(product) {
   return Padding(
     padding: const EdgeInsets.all(12),
@@ -159,6 +165,7 @@ Widget _buildBasicInfo(product) {
   );
 }
 
+// HIỂN THỊ GIÁ:
 Widget _buildPriceInfo(product) {
   final discountedPrice =
       product.price * (1 - product.discountPercentage / 100);
@@ -168,7 +175,7 @@ Widget _buildPriceInfo(product) {
     child: Row(
       children: [
         Text(
-          "\$${discountedPrice.toStringAsFixed(2)}",
+          formatPrice(discountedPrice),
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -178,7 +185,7 @@ Widget _buildPriceInfo(product) {
         const SizedBox(width: 8),
         if (product.discountPercentage > 0)
           Text(
-            "\$${product.price}",
+            formatPrice(product.price),
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
               color: Colors.grey,
@@ -201,6 +208,92 @@ Widget _buildPriceInfo(product) {
   );
 }
 
+// HÀM TẠO NÚT ACTION DƯỚI GIÁ:
+Widget buildActionButtons(BuildContext context, product) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    child: Row(
+      children: [
+        // NÚT TRẢ GÓP:
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.white, width: 2),
+              ),
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text("Chọn trả góp 0%!")));
+            },
+            child: const Text(
+              "Trả góp 0%",
+              style: TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        // NÚT MUA NGAY:
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.white, width: 2),
+              ),
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Đi tới thanh toán!")),
+              );
+            },
+            child: const Text(
+              "Mua ngay",
+              style: TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        // NÚT GIỎ HÀNG:
+        SizedBox(
+          width: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.white, width: 2),
+              ),
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Đã thêm vào giỏ hàng!")),
+              );
+            },
+            child: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// CÁC THÔNG TIN CHI TIẾT:
 Widget _buildMetaInfo(product) {
   return Padding(
     padding: const EdgeInsets.all(12),
@@ -342,4 +435,10 @@ Widget _buildReviews(product) {
       ],
     ),
   );
+}
+
+// HÀM ĐỔI GIÁ ĐÔ SANG GIÁ VIỆT:
+String formatPrice(double usdPrice, {double exchangeRate = 25000}) {
+  double vndPrice = usdPrice * exchangeRate;
+  return "${NumberFormat("#,##0", "vi_VN").format(vndPrice)}đ";
 }
