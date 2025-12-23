@@ -28,6 +28,11 @@ class _HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<_HomeView> {
   final TextEditingController _controller = TextEditingController();
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +55,7 @@ class _HomeViewState extends State<_HomeView> {
     return Scaffold(
       //LÀM CHO APP BAR ĐÈ LÊN BODY:
       extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xfff5f5f5),
 
       //APP BAR Ở ĐÂY:
       appBar: PreferredSize(

@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_baithicuoiky/models/login_response.dart';
 import 'package:flutter_baithicuoiky/models/product_model.dart';
+import 'package:flutter_baithicuoiky/models/user_model.dart';
 
 class ApiService {
   static const String baseUrl = "https://dummyjson.com";
@@ -78,6 +80,47 @@ class ApiService {
       return result;
     } catch (e) {
       throw Exception("Failed to load products: $e");
+    }
+  }
+
+  //Lấy chìa khóa đăng nhập:
+  Future<LoginResponse> login(String username, String password) async {
+    try {
+      var response = await dio.post(
+        'https://dummyjson.com/auth/login',
+        data: {"username": username, "password": password, "expiresInMins": 30},
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponse.fromJson(response.data);
+      } else {
+        throw Exception("Login thất bại: ${response.statusCode}");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        final msg = e.response?.data['message'] ?? 'Lỗi đăng nhập';
+        throw Exception(msg);
+      }
+      throw Exception('Lỗi không xác định');
+    }
+  }
+
+  //Lấy user với chìa khóa:
+  Future<User> getUser(String accessToken) async {
+    try {
+      var response = await dio.get(
+        "https://dummyjson.com/auth/me",
+        options: Options(headers: {"Authorization": "Bearer $accessToken"}),
+      );
+
+      return User.fromMap(response.data);
+    } catch (e) {
+      if (e is DioException) {
+        final msg = e.response?.data['message'] ?? 'Lỗi đăng nhập';
+        throw Exception(msg);
+      }
+      throw Exception('Lỗi không xác định');
     }
   }
 }
