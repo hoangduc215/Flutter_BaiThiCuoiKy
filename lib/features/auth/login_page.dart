@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
+import 'package:flutter_baithicuoiky/features/auth/register_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -59,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
 
       //BODY Ở ĐÂY:
-      body: SafeArea(child: MyBody()),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
@@ -82,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
 
   //HÀM BODY:
-  Widget MyBody() {
+  Widget _buildBody() {
     return Center(
       child: SingleChildScrollView(
         child: Form(
@@ -233,20 +235,136 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           if (!mounted) return;
                           if (controller.state.user != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Đăng nhập thành công!')),
-                            );
-                            Navigator.pop(context);
-                          } else if (controller.state.error != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Sai tài khoản hoặc mật khẩu"),
+                            // THÔNG BÁO ĐĂNG NHẬP THÀNH CÔNG:
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                      size: 64,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Đăng nhập thành công',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Chào mừng bạn quay trở lại',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                               ),
+                            );
+                            Future.delayed(
+                              const Duration(milliseconds: 1500),
+                              () {
+                                if (!mounted) return;
+                                Navigator.of(
+                                  context,
+                                  rootNavigator: true,
+                                ).pop(); // đóng dialog
+                                Navigator.of(
+                                  context,
+                                ).pop(true); // đóng LoginPage
+                              },
+                            );
+                          } else if (controller.state.error != null) {
+                            // THÔNG BÁO SAI TÀI KHOẢN HOẶC MẬT KHẨU:
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(
+                                      Icons.error,
+                                      color: Colors.red,
+                                      size: 64,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Đăng nhập thất bại',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Sai tài khoản hoặc mật khẩu',
+                                      style: TextStyle(color: Colors.grey),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                            Future.delayed(
+                              const Duration(milliseconds: 1500),
+                              () {
+                                if (!mounted) return;
+                                Navigator.of(context).pop(); // chỉ đóng dialog
+                              },
                             );
                           }
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Có lỗi xảy ra: $e')),
+                          // LỖI XẢY RA KHI API LỖI:
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.error,
+                                    color: Colors.red,
+                                    size: 64,
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Đăng nhập thất bại',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Có lỗi xảy ra: $e',
+                                    style: TextStyle(color: Colors.grey),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                          Future.delayed(
+                            const Duration(milliseconds: 1500),
+                            () {
+                              if (!mounted) return;
+                              Navigator.of(context).pop();
+                            },
                           );
                         }
                       }
@@ -265,6 +383,38 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.white,
                         letterSpacing: 1,
                       ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+
+                // LINK NHẤN SANG TRANG ĐĂNG KÝ:
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Chưa có tài khoản? ',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 14,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Đăng ký ngay',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterPage(),
+                                ),
+                              );
+                            },
+                        ),
+                      ],
                     ),
                   ),
                 ),

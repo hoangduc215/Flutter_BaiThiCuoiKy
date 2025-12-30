@@ -32,7 +32,7 @@ class HomeController extends ChangeNotifier {
   // LẤY 20 SẢN PHẨM CÓ ĐÁNH GIÁ CAO NHẤT:
   List<Product> _getTopRated(List<Product> products, {int top = 20}) {
     final sorted = products.toList()
-      ..sort((a, b) => b.rating.compareTo(a.rating));
+      ..sort((a, b) => b.rating!.compareTo(a.rating ?? 0));
     return sorted.take(top).toList();
   }
 }

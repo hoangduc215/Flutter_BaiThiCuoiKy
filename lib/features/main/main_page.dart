@@ -32,14 +32,24 @@ class _MainPageState extends State<MainPage> {
         children: [
           _buildTabNavigator(
             HomePage(
-              onBranOrKeywordSelected: (String? brand, String? keyword) {
-                setTabIndex(1, initialBrand: brand, initialKeyword: keyword);
-              },
+              onBranOrKeywordSelected:
+                  (String? brand, String? keyword, String? loai) {
+                    setTabIndex(
+                      1,
+                      initialBrand: brand,
+                      initialKeyword: keyword,
+                      initialLoai: loai,
+                    );
+                  },
             ),
             0,
           ),
           _buildTabNavigator(
-            SearchPage(initialBrand: null, initialKeyword: null),
+            SearchPage(
+              initialBrand: null,
+              initialKeyword: null,
+              initialLoai: null,
+            ),
             1,
           ),
           _buildTabNavigator(const StorePage(), 2),
@@ -152,7 +162,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   //HÀM CHUYỂN TAB SEARCH:
-  void setTabIndex(int index, {String? initialBrand, String? initialKeyword}) {
+  void setTabIndex(
+    int index, {
+    String? initialBrand,
+    String? initialKeyword,
+    String? initialLoai,
+  }) {
     if (_currentIndex != index) {
       setState(() => _currentIndex = index);
     }
@@ -163,6 +178,7 @@ class _MainPageState extends State<MainPage> {
           builder: (_) => SearchPage(
             initialBrand: initialBrand,
             initialKeyword: initialKeyword,
+            initialLoai: initialLoai,
           ),
         ),
       );

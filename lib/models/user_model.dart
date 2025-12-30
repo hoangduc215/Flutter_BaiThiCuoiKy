@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class User {
   final int id;
   final String firstName;
@@ -11,7 +9,7 @@ class User {
   final String phone;
   final String username;
   final String password;
-  final DateTime birthDate;
+  final DateTime? birthDate;
   final String image;
   final String bloodGroup;
   final double height;
@@ -41,7 +39,7 @@ class User {
     required this.phone,
     required this.username,
     required this.password,
-    required this.birthDate,
+    this.birthDate,
     required this.image,
     required this.bloodGroup,
     required this.height,
@@ -61,40 +59,81 @@ class User {
     required this.role,
   });
 
-  factory User.fromMap(Map<String, dynamic> map) {
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: map['id'] as int,
-      firstName: map['firstName'] as String,
-      lastName: map['lastName'] as String,
-      maidenName: map['maidenName'] as String,
-      age: map['age'] as int,
-      gender: map['gender'] as String,
-      email: map['email'] as String,
-      phone: map['phone'] as String,
-      username: map['username'] as String,
-      password: map['password'] as String,
-      birthDate: _fixDate(map['birthDate']),
-      image: map['image'] as String,
-      bloodGroup: map['bloodGroup'] as String,
-      height: (map['height'] as num).toDouble(),
-      weight: (map['weight'] as num).toDouble(),
-      eyeColor: map['eyeColor'] as String,
-      hair: Hair.fromMap(map['hair'] as Map<String, dynamic>),
-      ip: map['ip'] as String,
-      address: Address.fromMap(map['address'] as Map<String, dynamic>),
-      macAddress: map['macAddress'] as String,
-      university: map['university'] as String,
-      bank: Bank.fromMap(map['bank'] as Map<String, dynamic>),
-      company: Company.fromMap(map['company'] as Map<String, dynamic>),
-      ein: map['ein'] as String,
-      ssn: map['ssn'] as String,
-      userAgent: map['userAgent'] as String,
-      crypto: Crypto.fromMap(map['crypto'] as Map<String, dynamic>),
-      role: map['role'] as String,
+      id: json['id'] as int? ?? 0,
+      firstName: json['firstName'] as String? ?? 'Hoàng',
+      lastName: json['lastName'] as String? ?? 'Đức',
+      maidenName: json['maidenName'] as String? ?? 'Đức Cận',
+      age: json['age'] as int? ?? 22,
+      gender: json['gender'] as String? ?? 'male',
+      email: json['email'] as String? ?? 'hoangminhduc21052003@gmail.com',
+      phone: json['phone'] as String? ?? '+84 329 801 850',
+      username: json['username'] as String? ?? 'hoangduc2003',
+      password: json['password'] as String? ?? '123456',
+      birthDate: json['birthDate'] != null
+          ? DateTime.tryParse(json['birthDate'])
+          : null,
+      image:
+          json['image'] as String? ??
+          'https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      bloodGroup: json['bloodGroup'] as String? ?? 'A',
+      height: (json['height'] as num?)?.toDouble() ?? 176.0,
+      weight: (json['weight'] as num?)?.toDouble() ?? 65.0,
+      eyeColor: json['eyeColor'] as String? ?? 'Brown',
+      hair: json['hair'] != null
+          ? Hair.fromJson(json['hair'])
+          : Hair(color: 'Black', type: 'Straight'),
+      ip: json['ip'] as String? ?? '198.233.334',
+      address: json['address'] != null
+          ? Address.fromJson(json['address'])
+          : Address(
+              address: '137 Phan Đình Phùng',
+              city: 'Huế',
+              state: 'Thừa Thiên Huế',
+              stateCode: '29112',
+              postalCode: '29112',
+              coordinates: Coordinates(lat: 0.0, lng: 0.0),
+              country: 'Việt Nam',
+            ),
+      macAddress: json['macAddress'] as String? ?? '',
+      university: json['university'] as String? ?? 'DHKH Huế',
+      bank: json['bank'] != null
+          ? Bank.fromJson(json['bank'])
+          : Bank(
+              cardExpire: '',
+              cardNumber: '',
+              cardType: '',
+              currency: '',
+              iban: '',
+            ),
+      company: json['company'] != null
+          ? Company.fromJson(json['company'])
+          : Company(
+              department: '',
+              name: '',
+              title: '',
+              address: Address(
+                address: '',
+                city: '',
+                state: '',
+                stateCode: '',
+                postalCode: '',
+                coordinates: Coordinates(lat: 0.0, lng: 0.0),
+                country: '',
+              ),
+            ),
+      ein: json['ein'] as String? ?? '',
+      ssn: json['ssn'] as String? ?? '',
+      userAgent: json['userAgent'] as String? ?? '',
+      crypto: json['crypto'] != null
+          ? Crypto.fromJson(json['crypto'])
+          : Crypto(coin: '', wallet: '', network: ''),
+      role: json['role'] as String? ?? 'user',
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'firstName': firstName,
@@ -106,54 +145,59 @@ class User {
       'phone': phone,
       'username': username,
       'password': password,
-      'birthDate': birthDate.toIso8601String(),
+      'birthDate': birthDate?.toIso8601String(),
       'image': image,
       'bloodGroup': bloodGroup,
       'height': height,
       'weight': weight,
       'eyeColor': eyeColor,
-      'hair': hair.toMap(),
+      'hair': hair.toJson(),
       'ip': ip,
-      'address': address.toMap(),
+      'address': address.toJson(),
       'macAddress': macAddress,
       'university': university,
-      'bank': bank.toMap(),
-      'company': company.toMap(),
+      'bank': bank.toJson(),
+      'company': company.toJson(),
       'ein': ein,
       'ssn': ssn,
       'userAgent': userAgent,
-      'crypto': crypto.toMap(),
+      'crypto': crypto.toJson(),
       'role': role,
     };
   }
-
-  factory User.fromJson(String source) =>
-      User.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  String toJson() => json.encode(toMap());
 }
 
-DateTime _fixDate(String date) {
-  final parts = date.split('-');
-  final year = parts[0];
-  final month = parts[1].padLeft(2, '0');
-  final day = parts[2].padLeft(2, '0');
-  return DateTime.parse("$year-$month-$day");
-}
-
+// Nested models with default values
 class Hair {
   final String color;
   final String type;
 
   Hair({required this.color, required this.type});
 
-  factory Hair.fromMap(Map<String, dynamic> map) {
-    return Hair(color: map['color'] as String, type: map['type'] as String);
+  factory Hair.fromJson(Map<String, dynamic> json) {
+    return Hair(
+      color: json['color'] as String? ?? '',
+      type: json['type'] as String? ?? '',
+    );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'color': color, 'type': type};
+  Map<String, dynamic> toJson() => {'color': color, 'type': type};
+}
+
+class Coordinates {
+  final double lat;
+  final double lng;
+
+  Coordinates({required this.lat, required this.lng});
+
+  factory Coordinates.fromJson(Map<String, dynamic> json) {
+    return Coordinates(
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
+    );
   }
+
+  Map<String, dynamic> toJson() => {'lat': lat, 'lng': lng};
 }
 
 class Address {
@@ -175,49 +219,29 @@ class Address {
     required this.country,
   });
 
-  factory Address.fromMap(Map<String, dynamic> map) {
+  factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      address: map['address'] as String,
-      city: map['city'] as String,
-      state: map['state'] as String,
-      stateCode: map['stateCode'] as String,
-      postalCode: map['postalCode'] as String,
-      coordinates: Coordinates.fromMap(
-        map['coordinates'] as Map<String, dynamic>,
-      ),
-      country: map['country'] as String,
+      address: json['address'] as String? ?? '',
+      city: json['city'] as String? ?? '',
+      state: json['state'] as String? ?? '',
+      stateCode: json['stateCode'] as String? ?? '',
+      postalCode: json['postalCode'] as String? ?? '',
+      coordinates: json['coordinates'] != null
+          ? Coordinates.fromJson(json['coordinates'])
+          : Coordinates(lat: 0.0, lng: 0.0),
+      country: json['country'] as String? ?? '',
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'address': address,
-      'city': city,
-      'state': state,
-      'stateCode': stateCode,
-      'postalCode': postalCode,
-      'coordinates': coordinates.toMap(),
-      'country': country,
-    };
-  }
-}
-
-class Coordinates {
-  final double lat;
-  final double lng;
-
-  Coordinates({required this.lat, required this.lng});
-
-  factory Coordinates.fromMap(Map<String, dynamic> map) {
-    return Coordinates(
-      lat: (map['lat'] as num).toDouble(),
-      lng: (map['lng'] as num).toDouble(),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {'lat': lat, 'lng': lng};
-  }
+  Map<String, dynamic> toJson() => {
+    'address': address,
+    'city': city,
+    'state': state,
+    'stateCode': stateCode,
+    'postalCode': postalCode,
+    'coordinates': coordinates.toJson(),
+    'country': country,
+  };
 }
 
 class Bank {
@@ -235,25 +259,23 @@ class Bank {
     required this.iban,
   });
 
-  factory Bank.fromMap(Map<String, dynamic> map) {
+  factory Bank.fromJson(Map<String, dynamic> json) {
     return Bank(
-      cardExpire: map['cardExpire'] as String,
-      cardNumber: map['cardNumber'] as String,
-      cardType: map['cardType'] as String,
-      currency: map['currency'] as String,
-      iban: map['iban'] as String,
+      cardExpire: json['cardExpire'] as String? ?? '',
+      cardNumber: json['cardNumber'] as String? ?? '',
+      cardType: json['cardType'] as String? ?? '',
+      currency: json['currency'] as String? ?? '',
+      iban: json['iban'] as String? ?? '',
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'cardExpire': cardExpire,
-      'cardNumber': cardNumber,
-      'cardType': cardType,
-      'currency': currency,
-      'iban': iban,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'cardExpire': cardExpire,
+    'cardNumber': cardNumber,
+    'cardType': cardType,
+    'currency': currency,
+    'iban': iban,
+  };
 }
 
 class Company {
@@ -269,23 +291,31 @@ class Company {
     required this.address,
   });
 
-  factory Company.fromMap(Map<String, dynamic> map) {
+  factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
-      department: map['department'] as String,
-      name: map['name'] as String,
-      title: map['title'] as String,
-      address: Address.fromMap(map['address'] as Map<String, dynamic>),
+      department: json['department'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      address: json['address'] != null
+          ? Address.fromJson(json['address'])
+          : Address(
+              address: '',
+              city: '',
+              state: '',
+              stateCode: '',
+              postalCode: '',
+              coordinates: Coordinates(lat: 0.0, lng: 0.0),
+              country: '',
+            ),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'department': department,
-      'name': name,
-      'title': title,
-      'address': address.toMap(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'department': department,
+    'name': name,
+    'title': title,
+    'address': address.toJson(),
+  };
 }
 
 class Crypto {
@@ -295,15 +325,17 @@ class Crypto {
 
   Crypto({required this.coin, required this.wallet, required this.network});
 
-  factory Crypto.fromMap(Map<String, dynamic> map) {
+  factory Crypto.fromJson(Map<String, dynamic> json) {
     return Crypto(
-      coin: map['coin'] as String,
-      wallet: map['wallet'] as String,
-      network: map['network'] as String,
+      coin: json['coin'] as String? ?? '',
+      wallet: json['wallet'] as String? ?? '',
+      network: json['network'] as String? ?? '',
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'coin': coin, 'wallet': wallet, 'network': network};
-  }
+  Map<String, dynamic> toJson() => {
+    'coin': coin,
+    'wallet': wallet,
+    'network': network,
+  };
 }

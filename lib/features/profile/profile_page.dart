@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_page.dart';
+import 'package:flutter_baithicuoiky/features/auth/register_page.dart';
+import 'package:flutter_baithicuoiky/features/profile/profile_detail_page.dart';
 import 'package:flutter_baithicuoiky/models/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +43,29 @@ class ProfilePage extends StatelessWidget {
               _Section(
                 title: 'Tài khoản',
                 items: [
-                  _Item('Thông tin cá nhân', Icons.person),
+                  _Item(
+                    'Thông tin cá nhân',
+                    Icons.person,
+                    onTap: () async {
+                      final user = context.read<LoginController>().state.user;
+
+                      // CHƯA ĐĂNG NHẬP
+                      if (user == null) {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                        );
+                        return;
+                      } else {
+                        // ĐÃ ĐĂNG NHẬP VÀO DETAIL
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileDetailPage(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   _Item('Sổ địa chỉ', Icons.location_on),
                   _Item('Liên kết tài khoản', Icons.link),
                 ],
@@ -148,7 +172,11 @@ class _WelcomeCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(builder: (_) => const RegisterPage()),
+                      );
+                    },
                     child: const Text(
                       'Đăng ký',
                       style: TextStyle(
@@ -225,7 +253,7 @@ class _Section extends StatelessWidget {
               leading: Icon(e.icon),
               title: Text(e.title),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: e.onTap,
             ),
           ),
         ],
@@ -237,7 +265,9 @@ class _Section extends StatelessWidget {
 class _Item {
   final String title;
   final IconData icon;
-  const _Item(this.title, this.icon);
+  final VoidCallback? onTap;
+
+  const _Item(this.title, this.icon, {this.onTap});
 }
 
 class _QuickItem extends StatelessWidget {

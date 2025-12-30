@@ -68,4 +68,10 @@ class LoginController extends ChangeNotifier {
     _state = LoginState.initial();
     notifyListeners();
   }
+
+  // FAKE LOGIN:
+  void fakeLogin(User user) {
+    _state = _state.copyWith(user: user, error: null, isLoading: false);
+    notifyListeners();
+  }
 }

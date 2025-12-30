@@ -7,7 +7,7 @@ class ApiService {
   static const String baseUrl = "https://dummyjson.com";
 
   static final Dio dio = Dio();
-
+  // -------------------------------Lấy danh sách --------------------------------
   /// Lấy tất cả điện thoại + phụ kiện:
   static Future<List<Product>> fetchPhonesAndAccessories() async {
     List<Product> result = [];
@@ -83,11 +83,12 @@ class ApiService {
     }
   }
 
+  //-------------------------------Đăng nhập ---------------------------------------
   //Lấy chìa khóa đăng nhập:
   Future<LoginResponse> login(String username, String password) async {
     try {
       var response = await dio.post(
-        'https://dummyjson.com/auth/login',
+        '$baseUrl/auth/login',
         data: {"username": username, "password": password, "expiresInMins": 30},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
@@ -114,10 +115,44 @@ class ApiService {
         options: Options(headers: {"Authorization": "Bearer $accessToken"}),
       );
 
-      return User.fromMap(response.data);
+      return User.fromJson(response.data);
     } catch (e) {
       if (e is DioException) {
         final msg = e.response?.data['message'] ?? 'Lỗi đăng nhập';
+        throw Exception(msg);
+      }
+      throw Exception('Lỗi không xác định');
+    }
+  }
+
+  // -----------------------------Đăng ký -----------------------------------------
+  /// Đăng ký tài khoản mới
+  Future<User> register({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await dio.post(
+        "$baseUrl/users/add",
+        data: {
+          "firstName": "Hoàng",
+          "lastName": "Đức",
+          "username": username,
+          "email": email,
+          "password": password,
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return User.fromJson(response.data);
+      } else {
+        throw Exception("Đăng ký thất bại: ${response.statusCode}");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        final msg = e.response?.data['message'] ?? 'Lỗi đăng ký';
         throw Exception(msg);
       }
       throw Exception('Lỗi không xác định');
