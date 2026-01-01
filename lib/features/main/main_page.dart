@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
             ),
             1,
           ),
-          _buildTabNavigator(const StorePage(), 2),
+          _buildTabNavigator(StorePage(), 2),
           _buildTabNavigator(const CartPage(), 3),
           _buildTabNavigator(const ProfilePage(), 4),
         ],

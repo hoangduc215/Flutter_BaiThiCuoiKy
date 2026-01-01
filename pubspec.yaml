@@ -12,9 +12,19 @@ dependencies:
   cupertino_icons: ^1.0.8
   dio: ^5.9.0
   provider: ^6.0.5
+
+  # DÙNG ĐỂ FORMAT GIÁ:
   intl: ^0.18.0
+
+  # DÙNG ĐỂ LẤY FONT CHO FB VÀ GG:
   font_awesome_flutter: ^10.7.0
+
+  # DÙNG ĐỂ LƯU TOKEN VÀ NGƯỜI DÙNG:
   shared_preferences: ^2.2.2
+
+  # DÙNG MAP:
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
 
 dev_dependencies:
   flutter_test:
