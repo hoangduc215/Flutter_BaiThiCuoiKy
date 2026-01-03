@@ -11,6 +11,7 @@ class ProfileDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // LẤY USER TỪ CONTROLLER:
     final user = context.watch<LoginController>().state.user!;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       //APP BAR Ở ĐÂY:

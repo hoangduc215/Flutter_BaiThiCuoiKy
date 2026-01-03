@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
+import 'package:flutter_baithicuoiky/features/auth/login_page.dart';
+import 'package:flutter_baithicuoiky/features/cart/cart_controller.dart';
+import 'package:flutter_baithicuoiky/models/cart_model.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final product;
@@ -277,8 +282,37 @@ Widget buildActionButtons(BuildContext context, product) {
               ),
             ),
             onPressed: () {
+              // LẤY USER:
+              final user = context.read<LoginController>().state.user;
+
+              // USER NULL BẮT ĐĂNG NHẬP:
+              if (user == null) {
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).push(MaterialPageRoute(builder: (_) => const LoginPage()));
+                return;
+              }
+
+              // NẾU ĐĂNG NHẬP RỒI THÌ THÊM VÀO:
+              context.read<CartController>().addToCart(
+                CartItem(
+                  productId: product.id,
+                  title: product.title,
+                  price: product.price,
+                  quantity: 1,
+                  discountPercentage: product.discountPercentage,
+                  total: product.price,
+                  discountedTotal:
+                      product.price * (1 - product.discountPercentage / 100),
+                  thumbnail: product.thumbnail,
+                ),
+                user.id,
+              );
+
+              // THÔNG BÁO:
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Đã thêm vào giỏ hàng!")),
+                const SnackBar(content: Text("THÊM VÀO GIỎ THÀNH CÔNG!")),
               );
             },
             child: const Icon(

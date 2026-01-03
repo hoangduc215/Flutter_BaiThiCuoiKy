@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_baithicuoiky/models/cart_model.dart';
 import 'package:flutter_baithicuoiky/models/login_response.dart';
 import 'package:flutter_baithicuoiky/models/product_model.dart';
 import 'package:flutter_baithicuoiky/models/user_model.dart';
@@ -153,6 +154,22 @@ class ApiService {
     } catch (e) {
       if (e is DioException) {
         final msg = e.response?.data['message'] ?? 'Lỗi đăng ký';
+        throw Exception(msg);
+      }
+      throw Exception('Lỗi không xác định');
+    }
+  }
+
+  // ----------------------------- GIỎ HÀNG ---------------------------------------
+  // LẤY GIỎ HÀNG DỰA TRÊN ID NGƯỜI DÙNG:
+  Future<CartResponse> getUserCart(int userId) async {
+    try {
+      final response = await dio.get("$baseUrl/carts/user/$userId");
+
+      return CartResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioException) {
+        final msg = e.response?.data['message'] ?? 'Lỗi lấy giỏ hàng';
         throw Exception(msg);
       }
       throw Exception('Lỗi không xác định');

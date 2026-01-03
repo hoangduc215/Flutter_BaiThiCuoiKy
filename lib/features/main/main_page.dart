@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
+import 'package:flutter_baithicuoiky/features/auth/login_page.dart';
 import 'package:flutter_baithicuoiky/features/cart/cart_page.dart';
 import 'package:flutter_baithicuoiky/features/home/home_page.dart';
 import 'package:flutter_baithicuoiky/features/profile/profile_page.dart';
 import 'package:flutter_baithicuoiky/features/search/search_page.dart';
 import 'package:flutter_baithicuoiky/features/store/store_page.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -95,7 +98,21 @@ class _MainPageState extends State<MainPage> {
             selectedItemColor: Colors.red,
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: false,
-            onTap: (index) {
+            onTap: (index) async {
+              // TRƯỜNG HỢP VÀO TAB GIỎ HÀNG MÀ CHƯA ĐĂNG NHẬP THÌ BẮT ĐĂNG NHẬP:
+              if (index == 3) {
+                final user = context.read<LoginController>().state.user;
+
+                if (user == null) {
+                  await Navigator.of(
+                    context,
+                    rootNavigator: true,
+                  ).push(MaterialPageRoute(builder: (_) => const LoginPage()));
+                  return;
+                }
+              }
+
+              // TRƯỜNG HỢP KHÁC KHÔNG CẦN CHECK ĐĂNG NHẬP:
               if (_currentIndex == index) {
                 _navigatorKeys[index].currentState?.popUntil(
                   (route) => route.isFirst,

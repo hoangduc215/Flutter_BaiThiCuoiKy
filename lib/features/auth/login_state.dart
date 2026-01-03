@@ -8,7 +8,7 @@ class LoginState {
   LoginState({required this.isLoading, this.error, this.user});
 
   factory LoginState.initial() {
-    return LoginState(isLoading: false);
+    return LoginState(isLoading: false, user: null, error: null);
   }
 
   LoginState copyWith({bool? isLoading, String? error, User? user}) {

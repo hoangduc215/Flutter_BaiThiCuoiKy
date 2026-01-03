@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_page.dart';
 import 'package:flutter_baithicuoiky/features/auth/register_page.dart';
+import 'package:flutter_baithicuoiky/features/cart/cart_controller.dart';
 import 'package:flutter_baithicuoiky/features/profile/profile_detail_page.dart';
 import 'package:flutter_baithicuoiky/models/user_model.dart';
 import 'package:provider/provider.dart';
@@ -327,6 +328,7 @@ class _LogoutSection extends StatelessWidget {
 
           if (ok == true) {
             context.read<LoginController>().logout();
+            context.read<CartController>().clear();
           }
         },
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_baithicuoiky/app/app.dart';
 import 'package:flutter_baithicuoiky/core/services/api_service.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
 import 'package:flutter_baithicuoiky/features/auth/register_controller.dart';
+import 'package:flutter_baithicuoiky/features/cart/cart_controller.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -14,6 +15,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => RegisterController(api: ApiService()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartController(api: ApiService()),
         ),
       ],
       child: const MyApp(),
