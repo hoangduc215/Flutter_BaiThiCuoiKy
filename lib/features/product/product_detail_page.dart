@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_controller.dart';
 import 'package:flutter_baithicuoiky/features/auth/login_page.dart';
 import 'package:flutter_baithicuoiky/features/cart/cart_controller.dart';
+import 'package:flutter_baithicuoiky/features/cart/pay_page.dart';
 import 'package:flutter_baithicuoiky/models/cart_model.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,7 @@ class ProductDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xfff5f5f5),
       //APP BAR Ở ĐÂY:
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -213,7 +215,7 @@ Widget _buildPriceInfo(product) {
   );
 }
 
-// HÀM TẠO NÚT ACTION DƯỚI GIÁ:
+// HÀM TẠO NÚT ACTION DƯỚI GIÁ------------------------------------------------------------:
 Widget buildActionButtons(BuildContext context, product) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -256,9 +258,24 @@ Widget buildActionButtons(BuildContext context, product) {
               ),
             ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Đi tới thanh toán!")),
-              );
+              // LẤY USER:
+              final user = context.read<LoginController>().state.user;
+
+              // USER NULL BẮT ĐĂNG NHẬP:
+              if (user == null) {
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).push(MaterialPageRoute(builder: (_) => const LoginPage()));
+                return;
+              }
+
+              // CHUYỂN SANG TRANG THANH TOÁN:
+              final List<CartItem> items = [product.toCartItem(quantity: 1)];
+              Navigator.of(
+                context,
+                rootNavigator: true,
+              ).push(MaterialPageRoute(builder: (_) => PayPage(items: items)));
             },
             child: const Text(
               "Mua ngay",
@@ -310,10 +327,8 @@ Widget buildActionButtons(BuildContext context, product) {
                 user.id,
               );
 
-              // THÔNG BÁO:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("THÊM VÀO GIỎ THÀNH CÔNG!")),
-              );
+              // THÔNG BÁO KHI THÊM VÀO GIỎ THÀNH CÔNG:
+              showSuccessPopup(context, "Đã thêm vào giỏ hàng");
             },
             child: const Icon(
               Icons.shopping_cart,
@@ -475,4 +490,98 @@ Widget _buildReviews(product) {
 String formatPrice(double usdPrice, {double exchangeRate = 25000}) {
   double vndPrice = usdPrice * exchangeRate;
   return "${NumberFormat("#,##0", "vi_VN").format(vndPrice)}đ";
+}
+
+// THÔNG BÁO CHO NÚT THÊM GIỎ:
+void showSuccessPopup(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+
+  late OverlayEntry overlayEntry;
+
+  final controller = AnimationController(
+    vsync: Navigator.of(context),
+    duration: const Duration(milliseconds: 280),
+  );
+
+  final scaleAnim = Tween<double>(
+    begin: 0.85,
+    end: 1,
+  ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOutBack));
+
+  final opacityAnim = Tween<double>(
+    begin: 0,
+    end: 1,
+  ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+
+  overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: MediaQuery.of(context).size.height * 0.4,
+      left: 32,
+      right: 32,
+      child: FadeTransition(
+        opacity: opacityAnim,
+        child: ScaleTransition(
+          scale: scaleAnim,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2E7D32), Color(0xFF43A047)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Color(0xFF2E7D32),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Flexible(
+                    child: Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+  controller.forward();
+
+  Future.delayed(const Duration(milliseconds: 1400), () async {
+    await controller.reverse();
+    overlayEntry.remove();
+    controller.dispose();
+  });
 }

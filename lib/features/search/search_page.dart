@@ -95,12 +95,34 @@ class _SearchPageState extends State<SearchPage> {
           // LẤY STATE VÀ KIỂM TRA XEM CÓ LÕI KHÔNG:
           final state = controller.state;
           if (state.isLoading) {
-            return const Scaffold(
+            return Scaffold(
+              //APP BAR Ở ĐÂY:
+              appBar: buildSearchAppBar(
+                context: context,
+                keyword: keyword,
+                controller: controller,
+                scaffoldKey: _scaffoldKey,
+                selectedBrand: selectedBrand,
+                selectedLoai: selectedLoai,
+              ),
+
               body: Center(child: CircularProgressIndicator()),
             );
           }
           if (state.error != null) {
-            return Scaffold(body: Center(child: Text("Lỗi: ${state.error}")));
+            return Scaffold(
+              //APP BAR Ở ĐÂY:
+              appBar: buildSearchAppBar(
+                context: context,
+                keyword: keyword,
+                controller: controller,
+                scaffoldKey: _scaffoldKey,
+                selectedBrand: selectedBrand,
+                selectedLoai: selectedLoai,
+              ),
+
+              body: Center(child: Text("Lỗi: ${state.error}")),
+            );
           }
 
           // SCAFFOLD Ở ĐÂY:

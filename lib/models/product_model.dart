@@ -1,3 +1,5 @@
+import 'package:flutter_baithicuoiky/models/cart_model.dart';
+
 class ProductResponse {
   final List<Product>? products;
   final int? total;
@@ -139,6 +141,25 @@ class Product {
     'images': images ?? [],
     'thumbnail': thumbnail ?? '',
   };
+
+  // CHUYỂN PRODUCT THÀNH CARD ITEMS:
+  CartItem toCartItem({int quantity = 1}) {
+    final double priceValue = price ?? 0.0;
+    final double discount = discountPercentage ?? 0.0;
+
+    final double discountedPrice = priceValue * (1 - discount / 100);
+
+    return CartItem(
+      productId: id ?? 0,
+      title: title ?? '',
+      price: priceValue,
+      quantity: quantity,
+      total: priceValue * quantity,
+      discountPercentage: discount,
+      discountedTotal: discountedPrice * quantity,
+      thumbnail: thumbnail ?? '',
+    );
+  }
 }
 
 class Dimensions {

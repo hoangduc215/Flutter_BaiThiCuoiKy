@@ -57,10 +57,42 @@ class _HomeViewState extends State<_HomeView> {
     // KIỂM TRA XEM STATE ĐANG LOAD HAY CÓ LỖI KHÔNG:
     final state = context.watch<HomeController>().state;
     if (state.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        //APP BAR Ở ĐÂY:
+        appBar: buildHomeAppBar(
+          controller: _controller,
+          scaffoldKey: _scaffoldKey,
+          onSearchChanged: () {
+            setState(() {});
+          },
+          onSearchSubmit: (value) {
+            if (value.trim().isNotEmpty) {
+              widget.onBranOrKeywordSelected(null, value.trim(), null);
+            }
+          },
+        ),
+
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
     if (state.error != null) {
-      return Scaffold(body: Center(child: Text("Lỗi: ${state.error}")));
+      return Scaffold(
+        //APP BAR Ở ĐÂY:
+        appBar: buildHomeAppBar(
+          controller: _controller,
+          scaffoldKey: _scaffoldKey,
+          onSearchChanged: () {
+            setState(() {});
+          },
+          onSearchSubmit: (value) {
+            if (value.trim().isNotEmpty) {
+              widget.onBranOrKeywordSelected(null, value.trim(), null);
+            }
+          },
+        ),
+
+        body: Center(child: Text("Lỗi: ${state.error}")),
+      );
     }
 
     // SCAFFOLD Ở ĐÂY:

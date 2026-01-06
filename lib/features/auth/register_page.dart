@@ -286,7 +286,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           );
                           if (!mounted) return;
                           if (registerController.state.user != null) {
-                            // 👉 FAKE LOGIN NGAY SAU KHI ĐĂNG KÝ
+                            //  FAKE LOGIN NGAY SAU KHI ĐĂNG KÝ
                             loginController.fakeLogin(
                               registerController.state.user!,
                             );
@@ -336,14 +336,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             );
                           } else if (registerController.state.error != null) {
-                            final error = registerController.state.error;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Đăng ký thất bại: $error'),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
                             // THÔNG BÁO ĐĂNG KÝ THẤT BẠI
                             showDialog(
                               context: context,

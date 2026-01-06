@@ -63,6 +63,7 @@ class CartController extends ChangeNotifier {
     }
 
     // ĐÃ CÓ CART:
+    // TÌM SẢN PHẨM ĐÃ CÓ TRONG GIỎ CHƯA:
     final index = cart.items.indexWhere(
       (e) => e.productId == newItem.productId,
     );
@@ -70,13 +71,20 @@ class CartController extends ChangeNotifier {
     List<CartItem> items;
 
     if (index >= 0) {
+      // LẤY SẢN PHẨM CŨ:
       final oldItem = cart.items[index];
+
+      // TÍNH SỐ LƯỢNG MỚI CHO SẢN PHẨM:
       final newQty = oldItem.quantity + newItem.quantity;
 
       items = [...cart.items];
+
+      // TÍNH LẠI SỐ LƯỢNG, GIÁ, SAU GIẢM GIÁ:
       items[index] = oldItem.copyWith(
         quantity: newQty,
         total: oldItem.price * newQty,
+
+        // TÍNH TIỀN SAU GIẢM GIÁ:
         discountedTotal: _calcDiscounted(
           oldItem.price,
           newQty,

@@ -131,7 +131,7 @@ class _WelcomeCard extends StatelessWidget {
             ),
           ),
 
-          // NÚT ĐĂNG NHẬP VÀ ĐĂNG KÝ VÀ ĐĂNG XUẤT:
+          // NÚT ĐĂNG NHẬP VÀ ĐĂNG KÝ NẾU CHƯA ĐĂNG NHẬP:
           Column(
             children: [
               if (user == null) ...[

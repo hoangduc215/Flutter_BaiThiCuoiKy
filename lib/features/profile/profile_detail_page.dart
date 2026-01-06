@@ -14,6 +14,7 @@ class ProfileDetailPage extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xfff5f5f5),
       //APP BAR Ở ĐÂY:
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
