@@ -1,16 +1,14 @@
-# flutter_baithicuoiky
+## 📱 Mobile Phone Store Application
 
-A new Flutter project.
+A mobile application for selling mobile phones and accessories, similar to the web version of the store.
 
-## Getting Started
+Key Features:
 
-This project is a starting point for a Flutter application.
+- Product listing
+- Product details
+- Shopping cart
+- Order placement
+- User account system
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Tech Stack:
+Flutter • Dart • API
